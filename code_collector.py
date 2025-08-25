@@ -54,7 +54,7 @@ ALLOWED_EXTENSIONS = [
     ".md", ".mdx", ".rst", ".adoc", ".txt", ".log",
 ]
 
-SPECIAL_FILENAMES = {
+ALLOWED_FILENAMES = {
     "Dockerfile", "dockerfile",
     "docker-compose.yml", "docker-compose.yaml",
     "Makefile", "CMakeLists.txt",
@@ -64,6 +64,21 @@ SPECIAL_FILENAMES = {
     ".eslintrc", ".eslintrc.json", ".eslintignore",
     ".stylelintrc", ".stylelintignore",
     "Procfile", "Justfile",
+}
+
+IGNORE_FILENAMES = {
+    # Node / JS
+    "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
+
+    # Git & VCS
+    ".gitignore", ".gitkeep", ".gitattributes",
+
+    # Tool configs
+    ".prettierignore", ".eslintignore", ".stylelintignore",
+    ".pylintrc", ".flake8", ".editorconfig",
+
+    # Env / secrets
+    ".env", ".env.local", ".env.production", ".env.development", ".env.test",
 }
 
 IGNORE_FOLDERS = [
@@ -152,7 +167,9 @@ def aggregate_code(output_filename, all_files=False, use_color=True):
                     if not all_files:
                         name = os.path.basename(file)
                         _, ext = os.path.splitext(file)
-                        if (ext.lower() not in ALLOWED_EXTENSIONS) and (name not in SPECIAL_FILENAMES):
+                        if name in IGNORE_FILENAMES:
+                            continue
+                        if (ext.lower() not in ALLOWED_EXTENSIONS) and (name not in ALLOWED_FILENAMES):
                             continue
                     rel_path = os.path.relpath(file_path, ".")
                     outfile.write(
